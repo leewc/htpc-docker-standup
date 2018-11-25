@@ -50,10 +50,11 @@ services:
         volumes:
             - './plex:/config'
             - './plex/transcode:/transcode'
-            - '/media/Media/Media/Movies:/data/movies'
-            - '/media/Media/Media/TVShows:/data/tvshows'
-            - '/media/Media/Media/Kid Movies:/data/kidmovies'
-            - '/media/Media/Media/Kid TV:/data/kidtvshows'
+            - '/media/HTPC/Movies:/data/movies'
+            - '/media/HTPC/TVShows:/data/tvshows'
+            # No kids don't care :P
+            # - '/media/HTPC/Media/Kid Movies:/data/kidmovies'
+            # - '/media/HTPC/Media/Kid TV:/data/kidtvshows'
             - '/etc/localtime:/etc/localtime:ro'
 
     # ----------------------------------------
@@ -94,7 +95,7 @@ services:
             - LETSENCRYPT_HOST=deluge.${DOMAIN}
             - LETSENCRYPT_EMAIL=${EMAIL}
         volumes:
-            - '/media/Media/Torrents:/data'
+            - '/media/HTPC/Torrents:/data'
             - './delugevpn/config:/config'
             - './ovpn/${VPNPROVIDER}:/config/openvpn'
             - '/etc/localtime:/etc/localtime:ro'
@@ -118,9 +119,9 @@ services:
             - LETSENCRYPT_EMAIL=${EMAIL}
         volumes:
             - './sonarr:/config'
-            - '/media/Media/Torrents/Completed:/data/Completed'
-            - '/media/Media/Media/TVShows:/tv'
-            - '/media/Media/Media/Kid TV:/kidtv'
+            - '/media/HTPC/Torrents/Completed:/data/Completed'
+            - '/media/HTPC/TVShows:/tv'
+            # - '/media/Media/Media/Kid TV:/kidtv'
             - '/etc/localtime:/etc/localtime:ro'
 
     # ----------------------------------------
@@ -142,9 +143,9 @@ services:
             - LETSENCRYPT_EMAIL=${EMAIL}
         volumes:
             - './radarr:/config'
-            - '/media/Media/Torrents/Completed:/data/Completed'
-            - '/media/Media/Media/Movies:/movies'
-            - '/media/Media/Media/Kid Movies:/kidmovies'
+            - '/media/HTPC/Torrents/Completed:/data/Completed'
+            - '/media/HTPC/Movies:/movies'
+            # - '/media/HTPC/Kid Movies:/kidmovies'
             - '/etc/localtime:/etc/localtime:ro'
 
     # ----------------------------------------
@@ -166,7 +167,7 @@ services:
             - LETSENCRYPT_EMAIL=${EMAIL}
         volumes:
             - './jackett:/config'
-            - '/media/Media/Torrents/Completed:/downloads'
+            - '/media/HTPC/Torrents/Completed:/downloads'
             - '/etc/localtime:/etc/localtime:ro'
 
     # ----------------------------------------
@@ -324,7 +325,8 @@ services:
             - LETSENCRYPT_EMAIL=${EMAIL}
         volumes:
             - './duplicati:/config'
-            - '/media/Media/Media:/media'
+            - '/media/HTPC/Movies:/data/movies'
+            - '/media/HTPC/TVShows:/data/tvshows'
             - '/etc/localtime:/etc/localtime:ro'
 
     # ----------------------------------------

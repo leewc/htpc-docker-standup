@@ -22,6 +22,7 @@ services:
     # ----------------------------------------
     # PLEX
     # Robust Media Server
+    # Navigate to plex using <ip>:32400 or <hostname>:32400 if you have setup dnsmasq
     # ----------------------------------------
     plex:
         container_name: plex
@@ -44,6 +45,7 @@ services:
             - ALLOWED_NETWORKS=${CIDR_ADDRESS}
             - PLEX_UID=${PUID}
             - PLEX_GID=${PGID}
+            # Plex doesn't need a VIRTUAL_HOST env as we use plex.tv once setup 
         hostname: ${HOSTNAME}
         volumes:
             - './plex:/config'
@@ -271,7 +273,7 @@ services:
         environment:
             - PUID=${PUID}
             - PGID=${PGID}
-            - VIRTUAL_HOST=netdata.${DOMAIN}
+            - VIRTUAL_HOST=syshealth.${DOMAIN}
             - LETSENCRYPT_HOST=netdata.${DOMAIN}
             - LETSENCRYPT_EMAIL=${EMAIL}
         cap_add:
@@ -337,6 +339,8 @@ services:
         ports:
             - '80:80'
             - '443:443'
+        depends_on:
+            - arch-delugevpn
         environment:
             - PUID=${PUID}
             - PGID=${PGID}
@@ -350,18 +354,45 @@ services:
     # ----------------------------------------
     # LETS ENCRYPT
     # SSL Support Companion for nginx-proxy
+    # Disable this as this setup is for LAN only access and LetsEncrypt
+    # requires access to your domain and currently running docker containers
     # ----------------------------------------
-    letsencrypt-nginx-proxy-companion:
-        image: jrcs/letsencrypt-nginx-proxy-companion
-        container_name: letsencrypt
+    # letsencrypt-nginx-proxy-companion:
+    #     image: jrcs/letsencrypt-nginx-proxy-companion
+    #     container_name: letsencrypt
+    #     restart: unless-stopped
+    #     network_mode: 'bridge'
+    #     environment:
+    #         - PUID=${PUID}
+    #         - PGID=${PGID}
+    #     volumes:
+    #         - './letsencrypt/certs:/etc/nginx/certs:rw'
+    #         - '/etc/localtime:/etc/localtime:ro'
+    #         - '/var/run/docker.sock:/var/run/docker.sock:ro'
+    #     volumes_from:
+    #         - 'nginx-proxy'
+
+    # ----------------------------------------
+    # DNSMASQ
+    # Local DNS to avoid reverse tunneling and
+    # exposing setup outside of LAN.
+    # ----------------------------------------
+    dnsmasq:
+        image: jpillora/dnsmasq
+        container_name: dnsmasq
         restart: unless-stopped
         network_mode: 'bridge'
+        ports:
+            # HOST:CONTAINER mapping
+            - '${IP_ADDRESS}:53:53/udp'
+            - '${IP_ADDRESS}:5380:8080'
+        volumes:
+            - './dnsmasq/dnsmasq.conf:/etc/dnsmasq.conf'
         environment:
             - PUID=${PUID}
             - PGID=${PGID}
-        volumes:
-            - './letsencrypt/certs:/etc/nginx/certs:rw'
-            - '/etc/localtime:/etc/localtime:ro'
-            - '/var/run/docker.sock:/var/run/docker.sock:ro'
-        volumes_from:
-            - 'nginx-proxy'
+            - VIRTUAL_HOST=mydns.${DOMAIN}
+            - VIRTUAL_PORT=8080
+        logging:
+            options:
+                max-size: "100m"

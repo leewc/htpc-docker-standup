@@ -1,1 +1,17 @@
 .env
+._*
+ovpn/torguard/credentials.conf
+
+# Do not track container-generated files used to hold state by default.
+duplicati/
+jackett/
+letsencrypt/
+muximux/
+nginx-proxy/
+ombi/
+plex/
+plexpy/
+portainer/
+radarr/
+sonarr/
+delugevpn/
